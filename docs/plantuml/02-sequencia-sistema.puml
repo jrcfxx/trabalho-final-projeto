@@ -1,0 +1,58 @@
+@startuml EcoEntrega_SSD_UC01
+title SSD UC-01 - Solicitar entrega sustentável
+skinparam shadowing false
+actor "Parceiro Comercial" as Parceiro
+participant "EcoEntrega" as Sistema
+actor "Gateway de Pagamento" as Gateway
+actor "Serviço de Mapas" as Mapas
+actor "Serviço de Notificação" as Notificacao
+
+Parceiro -> Sistema : solicitarEntrega(dados, itens, pagamento)
+Sistema -> Sistema : validarParceiro()
+Sistema -> Mapas : calcularRota(origem, destino)
+Mapas --> Sistema : rota, distância, duração
+Sistema -> Sistema : calcularTarifaECO2(itens, rota)
+Sistema -> Gateway : autorizarPagamento(valor, formaPagamento)
+Gateway --> Sistema : autorizaçãoConfirmada
+Sistema -> Sistema : registrarEntrega(SOLICITADA)
+Sistema -> Notificacao : notificarClienteEntregaCriada()
+Sistema --> Parceiro : entregaCriada(código, tarifa, previsão, co2Evitado)
+@enduml
+
+@startuml EcoEntrega_SSD_UC04
+title SSD UC-04 - Aceitar entrega
+skinparam shadowing false
+actor "Entregador Sustentável" as Entregador
+participant "EcoEntrega" as Sistema
+actor "Serviço de Mapas" as Mapas
+actor "Serviço de Notificação" as Notificacao
+
+Entregador -> Sistema : aceitarEntrega(entregaId)
+Sistema -> Sistema : validarDisponibilidade(entregador)
+Sistema -> Sistema : validarCompatibilidadeVeículo(peso, distância)
+Sistema -> Mapas : gerarRotaColetaEEntrega(entregaId)
+Mapas --> Sistema : rotaDetalhada
+Sistema -> Sistema : alterarStatus(ACEITA)
+Sistema -> Sistema : reservarEntregador()
+Sistema -> Notificacao : notificarParceiroECliente()
+Sistema --> Entregador : entregaAceita(rota, instruções)
+@enduml
+
+@startuml EcoEntrega_SSD_UC06
+title SSD UC-06 - Finalizar entrega
+skinparam shadowing false
+actor "Entregador Sustentável" as Entregador
+participant "EcoEntrega" as Sistema
+actor "Gateway de Pagamento" as Gateway
+actor "Serviço de Notificação" as Notificacao
+
+Entregador -> Sistema : finalizarEntrega(entregaId, comprovante)
+Sistema -> Sistema : validarEntregaEmRota()
+Sistema -> Sistema : armazenarComprovante()
+Sistema -> Gateway : capturarPagamento(autorização)
+Gateway --> Sistema : pagamentoCapturado
+Sistema -> Sistema : alterarStatus(ENTREGUE)
+Sistema -> Sistema : liberarEntregador()
+Sistema -> Notificacao : notificarEntregaConcluída()
+Sistema --> Entregador : confirmaçãoFinalização()
+@enduml

@@ -1,0 +1,66 @@
+@startuml EcoEntrega_Arquitetura
+title EcoEntrega - Arquitetura C4 Simplificada
+skinparam shadowing false
+skinparam componentStyle rectangle
+left to right direction
+
+actor "Cliente Final" as Cliente
+actor "Parceiro Comercial" as Parceiro
+actor "Entregador Sustentável" as Entregador
+actor "Operador Logístico" as Operador
+
+rectangle "EcoEntrega" {
+  component "Web App\nReact + Vite" as Web
+  component "Mobile App\nReact Native" as Mobile
+  component "API Gateway\nSpring Security" as Gateway
+
+  rectangle "Back-end\nSpring Boot - Monólito Modular" as Backend {
+    component "Módulo Usuários" as Usuarios
+    component "Módulo Entregas" as Entregas
+    component "Módulo Roteirização" as Rotas
+    component "Módulo Pagamentos" as Pagamentos
+    component "Módulo Notificações" as Notificacoes
+    component "Módulo Relatórios" as Relatorios
+  }
+
+  database "PostgreSQL + PostGIS" as Banco
+  queue "RabbitMQ" as Fila
+  database "Redis" as Redis
+}
+
+cloud "Serviço EcoMaps" as EcoMaps
+cloud "PayGreen" as PayGreen
+cloud "SendLeaf" as SendLeaf
+cloud "Observabilidade\nPrometheus + Grafana" as Observabilidade
+
+Cliente --> Mobile
+Parceiro --> Web
+Entregador --> Mobile
+Operador --> Web
+
+Web --> Gateway : HTTPS/JSON
+Mobile --> Gateway : HTTPS/JSON
+Gateway --> Usuarios
+Gateway --> Entregas
+Gateway --> Relatorios
+
+Entregas --> Rotas
+Entregas --> Pagamentos
+Entregas --> Notificacoes
+Entregas --> Banco
+Usuarios --> Banco
+Relatorios --> Banco
+Rotas --> EcoMaps
+Pagamentos --> PayGreen
+Notificacoes --> SendLeaf
+Entregas --> Fila : publica eventos
+Notificacoes --> Fila : consome eventos
+Entregas --> Redis : disponibilidade/rastreamento
+Backend --> Observabilidade : métricas e logs
+
+note right of Backend
+  Arquitetura hexagonal:
+  domínio no centro, adaptadores
+  para banco, mensageria e APIs externas.
+end note
+@enduml

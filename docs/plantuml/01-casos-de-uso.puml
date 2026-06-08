@@ -1,0 +1,63 @@
+@startuml EcoEntrega_CasosDeUso
+title EcoEntrega - Diagrama de Casos de Uso
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Cliente Final" as Cliente
+actor "Parceiro Comercial" as Parceiro
+actor "Entregador Sustentável" as Entregador
+actor "Operador Logístico" as Operador
+actor "Administrador" as Admin
+actor "Gateway de Pagamento" as Pagamento
+actor "Serviço de Mapas" as Mapas
+actor "Serviço de Notificação" as Notificacao
+
+rectangle "EcoEntrega" {
+  usecase "UC-01\nSolicitar entrega sustentável" as UC01
+  usecase "UC-02\nCalcular tarifa e CO2 evitado" as UC02
+  usecase "UC-03\nPagar entrega" as UC03
+  usecase "UC-04\nAceitar entrega" as UC04
+  usecase "UC-05\nRastrear entrega" as UC05
+  usecase "UC-06\nFinalizar entrega" as UC06
+  usecase "UC-07\nAvaliar entrega" as UC07
+  usecase "UC-08\nGerenciar parceiro" as UC08
+  usecase "UC-09\nMonitorar exceções logísticas" as UC09
+  usecase "Validar disponibilidade\ndo entregador" as UC10
+  usecase "Enviar notificações\nde status" as UC11
+}
+
+Parceiro --> UC01
+Parceiro --> UC02
+Parceiro --> UC03
+Parceiro --> UC05
+
+Entregador --> UC04
+Entregador --> UC06
+
+Cliente --> UC05
+Cliente --> UC07
+
+Operador --> UC09
+Operador --> UC05
+
+Admin --> UC08
+Admin --> UC09
+
+UC01 ..> UC02 : <<include>>
+UC01 ..> UC03 : <<include>>
+UC04 ..> UC10 : <<include>>
+UC06 ..> UC11 : <<include>>
+UC05 ..> UC11 : <<extend>>
+
+Pagamento --> UC03
+Mapas --> UC02
+Mapas --> UC05
+Notificacao --> UC11
+
+note bottom of UC01
+  Uma entrega só pode ser criada
+  se o parceiro estiver aprovado
+  e o pagamento autorizado.
+end note
+@enduml

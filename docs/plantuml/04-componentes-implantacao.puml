@@ -1,0 +1,112 @@
+@startuml EcoEntrega_Componentes
+title EcoEntrega - Diagrama de Componentes
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+package "Camada de Apresentação" {
+  component "Portal do Parceiro" as Portal
+  component "Painel Operacional" as Painel
+  component "App do Cliente" as AppCliente
+  component "App do Entregador" as AppEntregador
+}
+
+package "API EcoEntrega" {
+  component "AuthController" as AuthController
+  component "EntregaController" as EntregaController
+  component "RastreamentoController" as RastreamentoController
+  component "RelatorioController" as RelatorioController
+
+  component "UsuarioApplicationService" as UsuarioService
+  component "EntregaApplicationService" as EntregaService
+  component "RoteirizacaoService" as RotaService
+  component "PagamentoService" as PagamentoService
+  component "NotificacaoService" as NotificacaoService
+  component "RelatorioService" as RelatorioService
+
+  component "EntregaRepository" as EntregaRepo
+  component "UsuarioRepository" as UsuarioRepo
+  component "PagamentoRepository" as PagamentoRepo
+}
+
+database "PostgreSQL" as PostgreSQL
+database "Redis" as Redis
+queue "RabbitMQ" as RabbitMQ
+cloud "EcoMaps API" as EcoMaps
+cloud "PayGreen API" as PayGreen
+cloud "SendLeaf API" as SendLeaf
+
+Portal --> EntregaController
+Painel --> RelatorioController
+AppCliente --> RastreamentoController
+AppEntregador --> EntregaController
+
+AuthController --> UsuarioService
+EntregaController --> EntregaService
+RastreamentoController --> EntregaService
+RelatorioController --> RelatorioService
+
+EntregaService --> RotaService
+EntregaService --> PagamentoService
+EntregaService --> NotificacaoService
+EntregaService --> EntregaRepo
+UsuarioService --> UsuarioRepo
+PagamentoService --> PagamentoRepo
+RelatorioService --> EntregaRepo
+
+EntregaRepo --> PostgreSQL
+UsuarioRepo --> PostgreSQL
+PagamentoRepo --> PostgreSQL
+EntregaService --> Redis
+NotificacaoService --> RabbitMQ
+RotaService --> EcoMaps
+PagamentoService --> PayGreen
+NotificacaoService --> SendLeaf
+@enduml
+
+@startuml EcoEntrega_Implantacao
+title EcoEntrega - Diagrama de Implantação
+skinparam shadowing false
+
+node "Usuário" {
+  artifact "Navegador Web" as Browser
+  artifact "App Mobile" as Mobile
+}
+
+cloud "AWS Cloud" {
+  node "CloudFront CDN" as CDN {
+    artifact "SPA React\nbuild estático" as SPA
+  }
+
+  node "Kubernetes Cluster" as K8S {
+    node "Pod API EcoEntrega" as PodApi {
+      artifact "ecoentrega-api.jar" as Jar
+    }
+    node "Pod Worker Notificações" as PodWorker {
+      artifact "notificacao-worker.jar" as Worker
+    }
+  }
+
+  database "RDS PostgreSQL\nPostGIS" as RDS
+  database "ElastiCache Redis" as ElasticRedis
+  queue "Amazon MQ\nRabbitMQ" as AmazonMQ
+  node "S3\nComprovantes" as S3
+}
+
+cloud "Serviços Externos" {
+  node "EcoMaps" as EcoMapsDeploy
+  node "PayGreen" as PayGreenDeploy
+  node "SendLeaf" as SendLeafDeploy
+}
+
+Browser --> CDN : HTTPS
+Mobile --> PodApi : HTTPS
+CDN --> PodApi : HTTPS /api
+PodApi --> RDS : JDBC/TLS
+PodApi --> ElasticRedis : TLS
+PodApi --> AmazonMQ : AMQP/TLS
+PodWorker --> AmazonMQ : AMQP/TLS
+PodApi --> S3 : HTTPS
+PodApi --> EcoMapsDeploy : HTTPS
+PodApi --> PayGreenDeploy : HTTPS
+PodWorker --> SendLeafDeploy : HTTPS
+@enduml

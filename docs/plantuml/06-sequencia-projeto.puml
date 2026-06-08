@@ -1,0 +1,95 @@
+@startuml EcoEntrega_Projeto_UC01
+title Sequência de Projeto UC-01 - Solicitar entrega sustentável
+skinparam shadowing false
+actor "Parceiro Comercial" as Parceiro
+boundary "Portal do Parceiro" as Portal
+control "EntregaController" as Controller
+control "EntregaApplicationService" as AppService
+entity "ParceiroRepository" as ParceiroRepo
+entity "Entrega" as Entrega
+control "RoteirizacaoService" as RotaService
+control "PoliticaTarifa" as Tarifa
+control "PagamentoService" as PagamentoService
+entity "EntregaRepository" as EntregaRepo
+control "NotificacaoService" as Notificacao
+
+Parceiro -> Portal : preenche solicitação
+Portal -> Controller : POST /entregas
+Controller -> AppService : solicitarEntrega(command)
+AppService -> ParceiroRepo : buscarAprovado(parceiroId)
+ParceiroRepo --> AppService : parceiro
+AppService -> RotaService : calcularRota(origem, destino)
+RotaService --> AppService : rota
+AppService -> Tarifa : calcular(command, rota)
+Tarifa --> AppService : tarifa, co2Evitado
+AppService -> PagamentoService : autorizar(valor, formaPagamento)
+PagamentoService --> AppService : pagamentoAutorizado
+AppService -> Entrega : criar(command, rota, tarifa, pagamento)
+Entrega --> AppService : entregaSolicitada
+AppService -> EntregaRepo : salvar(entrega)
+AppService -> Notificacao : publicarEntregaSolicitada(entrega)
+AppService --> Controller : entregaDTO
+Controller --> Portal : 201 Created
+@enduml
+
+@startuml EcoEntrega_Projeto_UC04
+title Sequência de Projeto UC-04 - Aceitar entrega
+skinparam shadowing false
+actor "Entregador Sustentável" as Entregador
+boundary "App do Entregador" as App
+control "EntregaController" as Controller
+control "AceitarEntregaService" as Service
+entity "EntregaRepository" as EntregaRepo
+entity "EntregadorRepository" as EntregadorRepo
+entity "Entrega" as EntregaEntity
+control "RoteirizacaoService" as RotaService
+control "NotificacaoService" as Notificacao
+
+Entregador -> App : toca em aceitar entrega
+App -> Controller : POST /entregas/{id}/aceite
+Controller -> Service : aceitar(entregaId, entregadorId)
+Service -> EntregaRepo : buscarSolicitada(entregaId)
+EntregaRepo --> Service : entrega
+Service -> EntregadorRepo : buscarDisponivel(entregadorId)
+EntregadorRepo --> Service : entregador
+Service -> EntregaEntity : validarCompatibilidade(entregador)
+Service -> RotaService : gerarRotaDetalhada(entrega, entregador)
+RotaService --> Service : rotaAtualizada
+Service -> EntregaEntity : aceitar(entregador, rotaAtualizada)
+Service -> EntregadorRepo : salvarIndisponivel(entregador)
+Service -> EntregaRepo : salvar(entrega)
+Service -> Notificacao : notificarAceite(entrega)
+Service --> Controller : aceiteConfirmado
+Controller --> App : 200 OK
+@enduml
+
+@startuml EcoEntrega_Projeto_UC06
+title Sequência de Projeto UC-06 - Finalizar entrega
+skinparam shadowing false
+actor "Entregador Sustentável" as Entregador
+boundary "App do Entregador" as App
+control "EntregaController" as Controller
+control "FinalizarEntregaService" as Service
+entity "EntregaRepository" as EntregaRepo
+entity "Entrega" as EntregaEntity
+control "ComprovanteStorage" as Storage
+control "PagamentoService" as PagamentoService
+control "NotificacaoService" as Notificacao
+entity "EntregadorRepository" as EntregadorRepo
+
+Entregador -> App : informa comprovante
+App -> Controller : POST /entregas/{id}/finalizacao
+Controller -> Service : finalizar(entregaId, comprovante)
+Service -> EntregaRepo : buscarEmRota(entregaId)
+EntregaRepo --> Service : entrega
+Service -> Storage : armazenar(comprovante)
+Storage --> Service : urlComprovante
+Service -> PagamentoService : capturar(entrega.pagamento)
+PagamentoService --> Service : pagamentoCapturado
+Service -> EntregaEntity : finalizar(urlComprovante)
+Service -> EntregadorRepo : liberar(entrega.entregador)
+Service -> EntregaRepo : salvar(entrega)
+Service -> Notificacao : notificarConclusao(entrega)
+Service --> Controller : entregaFinalizada
+Controller --> App : 200 OK
+@enduml

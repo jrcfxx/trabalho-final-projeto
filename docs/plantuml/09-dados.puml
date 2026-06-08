@@ -1,0 +1,144 @@
+@startuml EcoEntrega_Dados
+title EcoEntrega - Modelo de Dados / DER
+skinparam shadowing false
+hide circle
+
+entity "usuarios" as usuarios {
+  * id : uuid <<PK>>
+  --
+  nome : varchar
+  email : varchar <<UK>>
+  senha_hash : varchar
+  perfil : varchar
+  status : varchar
+  criado_em : timestamp
+}
+
+entity "parceiros_comerciais" as parceiros {
+  * id : uuid <<PK, FK usuarios.id>>
+  --
+  razao_social : varchar
+  cnpj : varchar <<UK>>
+  status_contrato : varchar
+  aprovado : boolean
+  limite_credito : numeric
+}
+
+entity "entregadores" as entregadores {
+  * id : uuid <<PK, FK usuarios.id>>
+  --
+  cpf : varchar <<UK>>
+  tipo_veiculo : varchar
+  disponibilidade : varchar
+  avaliacao_media : numeric
+  capacidade_kg : numeric
+}
+
+entity "clientes" as clientes {
+  * id : uuid <<PK, FK usuarios.id>>
+  --
+  telefone : varchar
+  documento : varchar
+}
+
+entity "enderecos" as enderecos {
+  * id : uuid <<PK>>
+  --
+  logradouro : varchar
+  numero : varchar
+  bairro : varchar
+  cidade : varchar
+  uf : char(2)
+  cep : varchar
+  latitude : numeric
+  longitude : numeric
+}
+
+entity "entregas" as entregas {
+  * id : uuid <<PK>>
+  --
+  codigo_rastreio : varchar <<UK>>
+  parceiro_id : uuid <<FK>>
+  cliente_id : uuid <<FK>>
+  entregador_id : uuid <<FK nullable>>
+  origem_id : uuid <<FK>>
+  destino_id : uuid <<FK>>
+  status : varchar
+  tarifa : numeric
+  peso_total_kg : numeric
+  co2_evitado_kg : numeric
+  janela_inicio : timestamp
+  janela_fim : timestamp
+  criada_em : timestamp
+}
+
+entity "itens_entrega" as itens {
+  * id : uuid <<PK>>
+  --
+  entrega_id : uuid <<FK>>
+  descricao : varchar
+  peso_kg : numeric
+  fragil : boolean
+  quantidade : integer
+}
+
+entity "rotas" as rotas {
+  * id : uuid <<PK>>
+  --
+  entrega_id : uuid <<FK>>
+  distancia_km : numeric
+  duracao_estimada_min : integer
+  geometria : geometry
+  provedor : varchar
+}
+
+entity "pagamentos" as pagamentos {
+  * id : uuid <<PK>>
+  --
+  entrega_id : uuid <<FK>>
+  valor : numeric
+  status : varchar
+  metodo : varchar
+  autorizacao_externa : varchar
+  autorizado_em : timestamp
+  capturado_em : timestamp
+}
+
+entity "eventos_rastreamento" as eventos {
+  * id : uuid <<PK>>
+  --
+  entrega_id : uuid <<FK>>
+  status : varchar
+  latitude : numeric
+  longitude : numeric
+  observacao : varchar
+  ocorrido_em : timestamp
+}
+
+entity "avaliacoes" as avaliacoes {
+  * id : uuid <<PK>>
+  --
+  entrega_id : uuid <<FK>>
+  cliente_id : uuid <<FK>>
+  entregador_id : uuid <<FK>>
+  nota : integer
+  comentario : text
+  criada_em : timestamp
+}
+
+usuarios ||--o| parceiros : especializa
+usuarios ||--o| entregadores : especializa
+usuarios ||--o| clientes : especializa
+parceiros ||--o{ entregas : cria
+clientes ||--o{ entregas : recebe
+entregadores ||--o{ entregas : executa
+enderecos ||--o{ entregas : origem
+enderecos ||--o{ entregas : destino
+entregas ||--|{ itens : contém
+entregas ||--o| rotas : possui
+entregas ||--|| pagamentos : possui
+entregas ||--o{ eventos : registra
+entregas ||--o| avaliacoes : recebe
+clientes ||--o{ avaliacoes : faz
+entregadores ||--o{ avaliacoes : recebe
+@enduml

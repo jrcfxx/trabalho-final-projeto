@@ -1,0 +1,158 @@
+@startuml EcoEntrega_Classes
+title EcoEntrega - Diagrama de Classes
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class Usuario {
+  +UUID id
+  +String nome
+  +String email
+  +String senhaHash
+  +Perfil perfil
+  +StatusUsuario status
+  +autenticar(senha): boolean
+}
+
+class ParceiroComercial {
+  +String razaoSocial
+  +String cnpj
+  +StatusContrato statusContrato
+  +boolean aprovado
+  +solicitarEntrega(dados): Entrega
+}
+
+class Entregador {
+  +String cpf
+  +TipoVeiculo tipoVeiculo
+  +Disponibilidade disponibilidade
+  +BigDecimal avaliacaoMedia
+  +aceitar(entrega): void
+  +ficarDisponivel(): void
+}
+
+class Cliente {
+  +String telefone
+  +String documento
+  +confirmarRecebimento(): void
+}
+
+class Entrega {
+  +UUID id
+  +String codigoRastreio
+  +StatusEntrega status
+  +BigDecimal tarifa
+  +BigDecimal pesoTotalKg
+  +BigDecimal co2EvitadoKg
+  +LocalDateTime janelaInicio
+  +LocalDateTime janelaFim
+  +solicitar(): void
+  +aceitar(entregador): void
+  +iniciarRota(): void
+  +finalizar(comprovante): void
+  +cancelar(motivo): void
+}
+
+class ItemEntrega {
+  +UUID id
+  +String descricao
+  +BigDecimal pesoKg
+  +boolean fragil
+  +Integer quantidade
+}
+
+class Endereco {
+  +String logradouro
+  +String numero
+  +String bairro
+  +String cidade
+  +String uf
+  +String cep
+  +BigDecimal latitude
+  +BigDecimal longitude
+}
+
+class Rota {
+  +UUID id
+  +BigDecimal distanciaKm
+  +Integer duracaoEstimadaMin
+  +String geometria
+  +calcularPrevisao(): LocalDateTime
+}
+
+class Pagamento {
+  +UUID id
+  +BigDecimal valor
+  +StatusPagamento status
+  +String autorizacaoExterna
+  +autorizar(): void
+  +capturar(): void
+  +estornar(): void
+}
+
+class EventoRastreamento {
+  +UUID id
+  +StatusEntrega status
+  +BigDecimal latitude
+  +BigDecimal longitude
+  +LocalDateTime ocorridoEm
+  +String observacao
+}
+
+class Avaliacao {
+  +UUID id
+  +Integer nota
+  +String comentario
+  +LocalDateTime criadaEm
+}
+
+class PoliticaTarifa {
+  +BigDecimal tarifaBase
+  +BigDecimal valorPorKm
+  +BigDecimal multiplicadorDemanda
+  +calcular(entrega, rota): BigDecimal
+}
+
+enum StatusEntrega {
+  SOLICITADA
+  ACEITA
+  COLETADA
+  EM_ROTA
+  ENTREGUE
+  CANCELADA
+  FALHA
+}
+
+enum StatusPagamento {
+  PENDENTE
+  AUTORIZADO
+  CAPTURADO
+  ESTORNADO
+  RECUSADO
+}
+
+enum TipoVeiculo {
+  BICICLETA
+  E_BIKE
+  VEICULO_ELETRICO_LEVE
+}
+
+Usuario <|-- ParceiroComercial
+Usuario <|-- Entregador
+Usuario <|-- Cliente
+
+ParceiroComercial "1" -- "0..*" Entrega : cria
+Cliente "1" -- "0..*" Entrega : recebe
+Entregador "0..1" -- "0..*" Entrega : executa
+Entrega "1" *-- "1..*" ItemEntrega
+Entrega "1" *-- "1" Endereco : origem
+Entrega "1" *-- "1" Endereco : destino
+Entrega "1" *-- "0..1" Rota
+Entrega "1" *-- "1" Pagamento
+Entrega "1" *-- "0..*" EventoRastreamento
+Entrega "1" *-- "0..1" Avaliacao
+Entrega --> StatusEntrega
+Pagamento --> StatusPagamento
+Entregador --> TipoVeiculo
+PoliticaTarifa ..> Entrega
+PoliticaTarifa ..> Rota
+@enduml

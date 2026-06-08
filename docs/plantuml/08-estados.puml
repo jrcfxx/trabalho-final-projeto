@@ -1,0 +1,58 @@
+@startuml EcoEntrega_EstadoEntrega
+title EcoEntrega - Diagrama de Estados da Entrega
+skinparam shadowing false
+
+[*] --> Rascunho
+Rascunho --> Solicitada : solicitarEntrega / pagamento autorizado
+Solicitada --> Aceita : aceitarEntrega
+Solicitada --> Cancelada : cancelarSemMulta
+Aceita --> Coletada : confirmarColeta
+Aceita --> Cancelada : cancelarComTaxa
+Coletada --> EmRota : iniciarDeslocamento
+EmRota --> Entregue : finalizarEntrega
+EmRota --> Falha : registrarInsucesso
+Falha --> EmRota : novaTentativa
+Falha --> Cancelada : encerrarComFalha
+Entregue --> [*]
+Cancelada --> [*]
+
+note right of Solicitada
+  Disponível para aceite
+  por entregadores compatíveis.
+end note
+@enduml
+
+@startuml EcoEntrega_EstadoPagamento
+title EcoEntrega - Diagrama de Estados do Pagamento
+skinparam shadowing false
+
+[*] --> Pendente
+Pendente --> Autorizado : autorizar
+Pendente --> Recusado : recusar
+Autorizado --> Capturado : capturar após entrega
+Autorizado --> Estornado : cancelar entrega
+Capturado --> Estornado : estornar por disputa
+Recusado --> [*]
+Capturado --> [*]
+Estornado --> [*]
+@enduml
+
+@startuml EcoEntrega_EstadoEntregador
+title EcoEntrega - Diagrama de Estados do Entregador
+skinparam shadowing false
+
+[*] --> Offline
+Offline --> Disponivel : entrarOnline
+Disponivel --> Reservado : aceitarEntrega
+Reservado --> EmColeta : iniciarColeta
+EmColeta --> EmEntrega : confirmarColeta
+EmEntrega --> Disponivel : finalizarEntrega
+Disponivel --> Pausado : pausar
+Pausado --> Disponivel : retomar
+Reservado --> Disponivel : entregaCancelada
+EmColeta --> Indisponivel : reportarProblema
+EmEntrega --> Indisponivel : reportarProblema
+Indisponivel --> Disponivel : operadorLibera
+Disponivel --> Offline : sair
+Pausado --> Offline : sair
+@enduml

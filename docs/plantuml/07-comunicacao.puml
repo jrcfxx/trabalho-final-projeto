@@ -1,0 +1,75 @@
+@startuml EcoEntrega_Comunicacao_UC01
+title Comunicação UC-01 - Solicitar entrega sustentável
+skinparam shadowing false
+
+object "parceiro:ParceiroComercial" as ParceiroUC01
+object "portal:PortalParceiro" as PortalUC01
+object "controller:EntregaController" as ControllerUC01
+object "service:EntregaApplicationService" as ServiceUC01
+object "roteirizacao:RoteirizacaoService" as RoteirizacaoUC01
+object "tarifa:PoliticaTarifa" as TarifaUC01
+object "pagamento:PagamentoService" as PagamentoUC01
+object "repo:EntregaRepository" as RepoUC01
+object "notificacao:NotificacaoService" as NotificacaoUC01
+
+ParceiroUC01 -- PortalUC01 : 1. solicita entrega
+PortalUC01 -- ControllerUC01 : 2. envia command
+ControllerUC01 -- ServiceUC01 : 3. solicitarEntrega()
+ServiceUC01 -- RoteirizacaoUC01 : 4. calcularRota()
+ServiceUC01 -- TarifaUC01 : 5. calcularTarifa()
+ServiceUC01 -- PagamentoUC01 : 6. autorizar()
+ServiceUC01 -- RepoUC01 : 7. salvar()
+ServiceUC01 -- NotificacaoUC01 : 8. publicarEvento()
+ControllerUC01 -- PortalUC01 : 9. retorna confirmação
+@enduml
+
+@startuml EcoEntrega_Comunicacao_UC04
+title Comunicação UC-04 - Aceitar entrega
+skinparam shadowing false
+
+object "entregador:Entregador" as EntregadorUC04
+object "app:AppEntregador" as AppUC04
+object "controller:EntregaController" as ControllerUC04
+object "service:AceitarEntregaService" as ServiceUC04
+object "repoEntrega:EntregaRepository" as RepoEntregaUC04
+object "repoEntregador:EntregadorRepository" as RepoEntregadorUC04
+object "entrega:Entrega" as EntregaUC04
+object "notificacao:NotificacaoService" as NotificacaoUC04
+
+EntregadorUC04 -- AppUC04 : 1. aceita card de entrega
+AppUC04 -- ControllerUC04 : 2. solicitar aceite
+ControllerUC04 -- ServiceUC04 : 3. aceitar()
+ServiceUC04 -- RepoEntregaUC04 : 4. buscarSolicitada()
+ServiceUC04 -- RepoEntregadorUC04 : 5. buscarDisponivel()
+ServiceUC04 -- EntregaUC04 : 6. validar e aceitar
+ServiceUC04 -- RepoEntregaUC04 : 7. salvar()
+ServiceUC04 -- RepoEntregadorUC04 : 8. reservar()
+ServiceUC04 -- NotificacaoUC04 : 9. notificar aceite
+ControllerUC04 -- AppUC04 : 10. retorna rota
+@enduml
+
+@startuml EcoEntrega_Comunicacao_UC06
+title Comunicação UC-06 - Finalizar entrega
+skinparam shadowing false
+
+object "entregador:Entregador" as EntregadorUC06
+object "app:AppEntregador" as AppUC06
+object "controller:EntregaController" as ControllerUC06
+object "service:FinalizarEntregaService" as ServiceUC06
+object "repo:EntregaRepository" as RepoUC06
+object "storage:ComprovanteStorage" as StorageUC06
+object "pagamento:PagamentoService" as PagamentoUC06
+object "entrega:Entrega" as EntregaUC06
+object "notificacao:NotificacaoService" as NotificacaoUC06
+
+EntregadorUC06 -- AppUC06 : 1. registra comprovante
+AppUC06 -- ControllerUC06 : 2. envia finalização
+ControllerUC06 -- ServiceUC06 : 3. finalizar()
+ServiceUC06 -- RepoUC06 : 4. buscarEmRota()
+ServiceUC06 -- StorageUC06 : 5. salvar comprovante
+ServiceUC06 -- PagamentoUC06 : 6. capturar pagamento
+ServiceUC06 -- EntregaUC06 : 7. finalizar()
+ServiceUC06 -- RepoUC06 : 8. persistir estado
+ServiceUC06 -- NotificacaoUC06 : 9. notificar conclusão
+ControllerUC06 -- AppUC06 : 10. retorna sucesso
+@enduml
