@@ -28,7 +28,7 @@
 | **Nome do sistema** | EcoEntrega |
 | **Versão** | 1.0 |
 | **Disciplina** | Projeto de Software |
-| **Elaborado por** | AAAA |
+| **Elaborado por** | Júlia Rocha Fiorini |
 | **Data de criação** | 08/06/2026 |
 | **Tipo de entrega** | Projeto, arquitetura e diagramação |
 | **Ferramenta obrigatória** | PlantUML |
@@ -131,8 +131,8 @@
 
 | Nome | Data | Razões para Mudança | Versão |
 | --- | --- | --- | --- |
-| AAAA | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
-| AAAA | 08/06/2026 | Inclusão dos diagramas renderizados e melhoria visual do README | 1.0 |
+| Júlia | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
+| Júlia | 08/06/2026 | Inclusão dos diagramas renderizados e melhoria visual do README | 1.0 |
 
 ---
 
@@ -557,7 +557,7 @@ Projeto de sistema elaborado pela aluna Júlia Fiorini como parte da disciplina 
 
 | Nome | Data | Razões para Mudança | Versão |
 | --- | --- | --- | --- |
-| AAAA | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
+| Júlia | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
 
 ## Scripts PlantUML
 
