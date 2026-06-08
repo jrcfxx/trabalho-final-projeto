@@ -533,7 +533,7 @@ Projeto acadêmico de modelagem, arquitetura e documentação de software.
 
 **Versão 1.0**
 
-Projeto de sistema elaborado pelo(s) aluno(s) AAAA como parte da disciplina Projeto de Software.
+Projeto de sistema elaborado pela aluna Júlia Fiorini como parte da disciplina Projeto de Software.
 
 **Data de criação:** 08/06/2026
 
