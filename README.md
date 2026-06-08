@@ -21,6 +21,30 @@
 
 ---
 
+<div align="center">
+
+## Documento Completo Oficial
+
+<b>Este é o documento principal do projeto EcoEntrega.</b>
+
+O arquivo completo em PDF contém a documentação final do sistema, com a estrutura acadêmica solicitada, descrição do domínio, requisitos, contratos, modelos UML, arquitetura e modelos de dados.
+
+<br>
+
+<a href="docs/EcoEntrega.pdf">
+  <img src="https://img.shields.io/badge/Abrir%20Documento%20Completo-PDF%20EcoEntrega-C62828?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Abrir documento completo em PDF">
+</a>
+
+<br><br>
+
+📄 **Arquivo:** [`docs/EcoEntrega.pdf`](docs/EcoEntrega.pdf)
+
+</div>
+
+> **Importante:** o PDF acima é a versão completa e oficial da documentação do projeto. O restante deste README funciona como apresentação visual, resumo navegável e apoio aos diagramas PlantUML.
+
+---
+
 ## Cartão do Projeto
 
 | Item | Informação |
@@ -61,6 +85,7 @@
 
 ## Tabela de Conteúdo
 
+0. [Documento Completo Oficial](#documento-completo-oficial)
 1. [Introdução](#1-introdução)
 2. [Modelos de Usuário e Requisitos](#2-modelos-de-usuário-e-requisitos)
    - [2.1 Descrição de Atores](#21-descrição-de-atores)
