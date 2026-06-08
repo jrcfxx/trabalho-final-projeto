@@ -557,7 +557,7 @@ Projeto de sistema elaborado pela aluna Júlia Fiorini como parte da disciplina 
 
 | Nome | Data | Razões para Mudança | Versão |
 | --- | --- | --- | --- |
-| AAAA | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
+| Júlia | 08/06/2026 | Criação da documentação inicial do projeto EcoEntrega | 1.0 |
 
 ## Scripts PlantUML
 
