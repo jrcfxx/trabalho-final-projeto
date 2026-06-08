@@ -28,7 +28,7 @@
 | **Nome do sistema** | EcoEntrega |
 | **Versão** | 1.0 |
 | **Disciplina** | Projeto de Software |
-| **Elaborado por** | AAAA |
+| **Elaborado por** | Júlia Rocha Fiorini |
 | **Data de criação** | 08/06/2026 |
 | **Tipo de entrega** | Projeto, arquitetura e diagramação |
 | **Ferramenta obrigatória** | PlantUML |
